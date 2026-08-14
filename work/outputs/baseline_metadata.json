@@ -1,0 +1,12 @@
+{
+  "rows": 30000,
+  "flagged_rows": 6058,
+  "top_score": 517715.0,
+  "median_score_flagged": 2221.0,
+  "reason_code": "ctr_below_tier_median",
+  "rule_threshold": "ctr < 0.7 * tier_median_ctr, AND impressions_90d >= 500",
+  "signal_checks": {
+    "staleness": "MIXED (n=17 in strict bucket, contradictory direction, no monotonic pattern in freshness_tier breakdown)",
+    "ctr_vs_position": "CONFIRMED (monotonic ctr decline by position tier, but fixed threshold not selective -- used tier-relative version instead)"
+  }
+}
