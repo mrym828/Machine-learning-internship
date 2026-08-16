@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>What Performance Archetypes Exist in a Content Portfolio? — A Clustering-Based Approach to SEO Review Prioritization</title>
+<title>What Performance Archetypes Exist in a Content Portfolio? A Clustering-Based Approach to SEO Review Prioritization</title>
 <meta name="description" content="A pseudonymized, K-Means-based study of content performance archetypes, validated against a random baseline and held-out clients, turned into a ranked, human-reviewed action queue.">
 <style>
   :root {
@@ -213,12 +213,12 @@
       position to discover behavioral archetypes without any predefined labels.
       The resulting model clears a random-assignment baseline by a wide margin
       (silhouette &minus;0.015 vs. 0.62 train / 0.53 test) and holds up on client accounts it never
-      saw during fitting &mdash; evidence the archetypes reflect real structure, not fitting
+      saw during fitting, which is evidence the archetypes reflect real structure, not fitting
       noise. Three archetypes emerge: a small, high-performing <strong>Champions</strong>
       group (4.6%), a large <strong>Underperforming Good Position</strong> group (77.8%)
       that ranks well but converts poorly to clicks, and a <strong>Buried and Ignored</strong>
       group (17.5%) that ranks and converts poorly. The output is a ranked, human-reviewed
-      action queue intended as decision support for prioritizing limited review time &mdash;
+      action queue intended as decision support for prioritizing limited review time,
       not an automated or causal recommendation engine.
     </p>
   </div>
@@ -228,7 +228,7 @@
   <h2>1. Introduction</h2>
   <p>
     An SEO content team rarely has time to review every page in a portfolio. Someone has
-    to decide, every cycle, which handful of pages get attention first &mdash; and a wrong
+    to decide, every cycle, which handful of pages get attention first, and a wrong
     call cuts both ways: a page that actually needs work but gets marked "fine" loses
     recoverable traffic, while a page that's fine but gets flagged wastes a reviewer's
     limited time.
@@ -236,7 +236,7 @@
   <p>
     Early exploration of this content portfolio showed engagement metrics are heavily
     skewed: most pages sit near zero engagement, while a much smaller group performs far
-    better. That is evidence of distinct behavioral groups, not one uniform population &mdash;
+    better. That is evidence of distinct behavioral groups, not one uniform population,
     exactly the situation clustering is built for, and exactly what a single fixed-threshold
     rule (e.g. "flag anything under X impressions") cannot capture, since it can't see how
     multiple signals interact.
@@ -245,7 +245,7 @@
     This paper frames the problem as unsupervised discovery rather than prediction: <strong>what
     performance archetypes exist across a content portfolio, and which pages should a
     reviewer look at first?</strong> The output is a ranked, reasoned queue for a human
-    reviewer &mdash; not an automated action, and not a causal claim about what fixing a page
+    reviewer, not an automated action, and not a causal claim about what fixing a page
     will do.
   </p>
 </section>
@@ -255,7 +255,7 @@
   <p>
     <strong>Release:</strong> the FlyRank pseudonymized internship warehouse
     (<code>FlyRank/internship-warehouse</code> on Hugging Face, gated release), queried
-    directly over remote Parquet via DuckDB &mdash; no raw data downloaded or stored locally.
+    directly over remote Parquet via DuckDB; no raw data was downloaded or stored locally.
   </p>
   <p>
     <strong>Tables:</strong> <code>fact_content_daily_performance</code> (grain: report_date
@@ -276,9 +276,9 @@
   <h3>What was excluded, and why</h3>
   <ul>
     <li>Items with no real search-console coverage in March. Verified directly: only 53.3%
-      of the ~331K-item March pool (176,738 items) had any real coverage that month &mdash; the
+      of the ~331K-item March pool (176,738 items) had any real coverage that month. The
       rest were excluded because they weren't measured, not because they were inactive.</li>
-    <li>Items with fewer than 30 total impressions in March &mdash; a volume floor added after
+    <li>Items with fewer than 30 total impressions in March, a volume floor added after
       a real finding: an early clustering attempt produced a suspiciously perfect result
       driven entirely by a handful of near-zero-impression items where a single lucky click
       created a misleadingly high ratio.</li>
@@ -302,28 +302,28 @@
   <p>
     <strong>Method:</strong> K-Means clustering, with <code>k</code> chosen by silhouette
     score rather than assumed, fit on two standardized features: click-through rate (ctr)
-    and average search position. Standardization matters here &mdash; without it, position's
+    and average search position. Standardization matters here: without it, position's
     larger raw numbers would dominate distance calculations purely due to scale, not because
     position is more informative than ctr.
   </p>
   <p>
-    <strong>Label:</strong> none. This is unsupervised discovery, not prediction &mdash; there
+    <strong>Label:</strong> none. This is unsupervised discovery, not prediction; there
     is no ground-truth "archetype" to predict. The proxy for behavior is the feature set
     itself, and a cluster only becomes meaningful once its contents are inspected and named.
   </p>
   <h3>Assumptions checked, not assumed</h3>
   <ul>
-    <li>One content item maps to exactly one client &mdash; verified with a grain check
+    <li>One content item maps to exactly one client, verified with a grain check
       (zero rows where a content item spans more than one client).</li>
     <li><code>k</code> was not fixed in advance. Values 2 through 6 were scored by
-      silhouette. A first attempt at k=2 scored a suspiciously perfect 0.94 &mdash; traced to
+      silhouette. A first attempt at k=2 scored a suspiciously perfect 0.94, traced to
       279 near-zero-impression items faking a cluster, not a real archetype. After adding
       the volume floor, k=3 was the honest winner.</li>
   </ul>
   <h3>Baseline</h3>
   <p>
-    A dummy baseline &mdash; random cluster assignment, no informed logic at all &mdash;
-    scored &minus;0.008 silhouette, essentially zero, confirming that random grouping carries
+    A dummy baseline, random cluster assignment with no informed logic at all,
+    scored &minus;0.015 silhouette, essentially zero, confirming that random grouping carries
     no real structure. The real model has to beat this floor, not just "look better than
     nothing."
   </p>
@@ -345,7 +345,7 @@
     <li>A dummy random baseline stands in for a base rate, so structure has to beat noise.</li>
     <li>The suspiciously perfect k=2 result was investigated, not celebrated.</li>
     <li>Every test-side metric uses a scaler/model already fit on train, applied via
-      transform/predict &mdash; never refit on test.</li>
+      transform/predict, never refit on test.</li>
     <li>Test-harness sanity check: deliberately feeding the cluster label back in as a
       feature raised the silhouette score (0.62 &rarr; 0.66), confirming the
       leakage-detection test itself actually works before trusting that no leakage was
@@ -368,7 +368,7 @@
   </table>
   <p class="caption">Figures above are this paper's own reproducible run (see
     <code>capstone.ipynb</code>). Earlier validation passes on different client-grouped
-    splits (w05, w06) landed train in 0.52&ndash;0.62 and test in 0.53&ndash;0.64 &mdash;
+    splits (w05, w06) landed train in 0.52&ndash;0.62 and test in 0.53&ndash;0.64;
     every observed run clears the dummy baseline by a wide margin.</p>
 
   <div class="figure">
@@ -383,7 +383,7 @@
 <section id="limitations">
   <h2>5. Limitations &amp; Honest Framing</h2>
   <ul>
-    <li><strong>Not causal.</strong> This is a cross-sectional, observational snapshot &mdash;
+    <li><strong>Not causal.</strong> This is a cross-sectional, observational snapshot;
       no experiment was run. The archetypes describe how pages currently behave, not why,
       and nothing here says a refresh or a title change <em>will</em> fix anything. The
       correct framing is decision-support: "these pages look worth reviewing first,
@@ -391,21 +391,21 @@
     <li><strong>Single-month scope.</strong> Everything is built on March 2026 only. Content
       behavior shifts with seasonality, algorithm changes, and editorial work already
       underway. The archetypes were validated to generalize across <em>clients</em> within
-      this month, not across <em>time</em> &mdash; a page's archetype could look different
+      this month, not across <em>time</em>. A page's archetype could look different
       next month, and this has not been tested.</li>
     <li><strong>Partial population.</strong> Only items with real search-console tracking
       (53.3% of the broader pool) and at least 30 impressions in March are covered. The rest
       are excluded for lack of data, not inactivity, and this work says nothing about them.</li>
     <li><strong>Only two features, on purpose.</strong> The model groups pages by how they
-      behave, not why &mdash; it says nothing about topic, intent, word count, or content
+      behave, not why; it says nothing about topic, intent, word count, or content
       quality. A reviewer still needs that context before acting.</li>
     <li><strong>Fuzzy boundaries, not hard categories.</strong> A hand review of borderline
-      cases found pages sitting right at a cluster's edge &mdash; e.g. a page with a
+      cases found pages sitting right at a cluster's edge, e.g. a page with a
       reasonably good position but zero clicks, still counted as Buried despite an
       almost-escaping position. Archetype membership is a strong hint, not a verdict.</li>
     <li><strong>Engagement-based signals (GA4) were dropped from the core model</strong>, not
       because they're uninteresting, but because real GA4 coverage in March 2026 was only
-      27.3% &mdash; too thin to build the primary archetypes on honestly.</li>
+      27.3%, too thin to build the primary archetypes on honestly.</li>
   </ul>
 </section>
 
@@ -451,7 +451,7 @@
   <div class="callout">
     <p><strong>Nothing here is automated.</strong> No automatic content edits, no automatic
     pruning of "Buried" pages, no automated SEO changes of any kind without a human
-    sign-off &mdash; this is a prioritization tool, not an action system.</p>
+    sign-off. This is a prioritization tool, not an action system.</p>
   </div>
 </section>
 
@@ -461,7 +461,7 @@
     Every number in this paper traces back to a notebook in the project repository:
     <a href="https://github.com/mrym828/Machine-learning-internship" target="_blank" rel="noopener">github.com/mrym828/Machine-learning-internship</a>.
     All random processes use a fixed seed (<code>random_state=42</code>), and every warehouse
-    query orders rows deterministically before any split or model fit &mdash; a real
+    query orders rows deterministically before any split or model fit. A real
     reproducibility bug (row order from the underlying SQL query affecting K-Means
     initialization near cluster boundaries) was found and fixed along the way; re-running
     the affected notebook twice now reproduces identical results.
@@ -472,12 +472,12 @@
     which reruns the full pipeline end to end. The week-by-week notebooks it builds on:
   </p>
   <ul>
-    <li><a href="https://github.com/mrym828/Machine-learning-internship/blob/main/work/notebooks/w03_data_contract.ipynb" target="_blank" rel="noopener"><code>w03_data_contract.ipynb</code></a> &mdash; the data contract and coverage checks</li>
-    <li><a href="https://github.com/mrym828/Machine-learning-internship/blob/main/work/notebooks/w04_baseline_score.ipynb" target="_blank" rel="noopener"><code>w04_baseline_score.ipynb</code></a> &mdash; signal checks and the rule-based baseline</li>
-    <li><a href="https://github.com/mrym828/Machine-learning-internship/blob/main/work/notebooks/w05_model.ipynb" target="_blank" rel="noopener"><code>w05_model.ipynb</code></a> &mdash; the K-Means model, baseline comparison, error analysis</li>
-    <li><a href="https://github.com/mrym828/Machine-learning-internship/blob/main/work/notebooks/w06_validation_audit.ipynb" target="_blank" rel="noopener"><code>w06_validation_audit.ipynb</code></a> &mdash; the honest-split audit and leakage checklist</li>
-    <li><a href="https://github.com/mrym828/Machine-learning-internship/blob/main/work/notebooks/w07_action_playbook.ipynb" target="_blank" rel="noopener"><code>w07_action_playbook.ipynb</code></a> &mdash; the ranked action queue and exports</li>
-    <li><a href="https://github.com/mrym828/Machine-learning-internship/blob/main/work/notebooks/capstone.ipynb" target="_blank" rel="noopener"><code>capstone.ipynb</code></a> &mdash; the notebook this paper is drawn from directly</li>
+    <li><a href="https://github.com/mrym828/Machine-learning-internship/blob/main/work/notebooks/w03_data_contract.ipynb" target="_blank" rel="noopener"><code>w03_data_contract.ipynb</code></a>: the data contract and coverage checks</li>
+    <li><a href="https://github.com/mrym828/Machine-learning-internship/blob/main/work/notebooks/w04_baseline_score.ipynb" target="_blank" rel="noopener"><code>w04_baseline_score.ipynb</code></a>: signal checks and the rule-based baseline</li>
+    <li><a href="https://github.com/mrym828/Machine-learning-internship/blob/main/work/notebooks/w05_model.ipynb" target="_blank" rel="noopener"><code>w05_model.ipynb</code></a>: the K-Means model, baseline comparison, error analysis</li>
+    <li><a href="https://github.com/mrym828/Machine-learning-internship/blob/main/work/notebooks/w06_validation_audit.ipynb" target="_blank" rel="noopener"><code>w06_validation_audit.ipynb</code></a>: the honest-split audit and leakage checklist</li>
+    <li><a href="https://github.com/mrym828/Machine-learning-internship/blob/main/work/notebooks/w07_action_playbook.ipynb" target="_blank" rel="noopener"><code>w07_action_playbook.ipynb</code></a>: the ranked action queue and exports</li>
+    <li><a href="https://github.com/mrym828/Machine-learning-internship/blob/main/work/notebooks/capstone.ipynb" target="_blank" rel="noopener"><code>capstone.ipynb</code></a>: the notebook this paper is drawn from directly</li>
   </ul>
   <p>
     To rerun: clone the repository, request access to the gated Hugging Face warehouse
