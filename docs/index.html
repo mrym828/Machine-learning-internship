@@ -206,20 +206,22 @@
   <h2>Abstract</h2>
   <div class="abstract">
     <p>
-      Which content pages should an SEO team review first, given limited time?
-      Using a pseudonymized snapshot of 125,645 content items with real search-console
-      coverage from a single month (March 2026) of the FlyRank internship warehouse,
-      this study applies K-Means clustering on click-through rate and average search
-      position to discover behavioral archetypes without any predefined labels.
-      The resulting model clears a random-assignment baseline by a wide margin
-      (silhouette &minus;0.015 vs. 0.62 train / 0.53 test) and holds up on client accounts it never
-      saw during fitting, which is evidence the archetypes reflect real structure, not fitting
-      noise. Three archetypes emerge: a small, high-performing <strong>Champions</strong>
-      group (4.6%), a large <strong>Underperforming Good Position</strong> group (77.8%)
-      that ranks well but converts poorly to clicks, and a <strong>Buried and Ignored</strong>
-      group (17.5%) that ranks and converts poorly. The output is a ranked, human-reviewed
-      action queue intended as decision support for prioritizing limited review time,
-      not an automated or causal recommendation engine.
+      Which content pages should an SEO team review first, given limited time, when most
+      of a portfolio already ranks well enough to pass an ordinary visibility check but
+      still isn't earning the clicks that position should bring? Using a pseudonymized
+      snapshot of 125,645 content items with real search-console coverage from a single
+      month (March 2026) of the FlyRank internship warehouse, this study applies K-Means
+      clustering on click-through rate and average search position to discover behavioral
+      archetypes without any predefined labels. The resulting model clears a
+      random-assignment baseline by a wide margin (silhouette &minus;0.015 vs. 0.62 train /
+      0.53 test) and holds up on client accounts it never saw during fitting, which is
+      evidence the archetypes reflect real structure, not fitting noise. Three archetypes
+      emerge: a small, high-performing <strong>Champions</strong> group (4.6%), a large
+      <strong>Underperforming Good Position</strong> group (77.8%, the biggest group in the
+      portfolio) that ranks well but converts poorly to clicks, and a <strong>Buried and
+      Ignored</strong> group (17.5%) that ranks and converts poorly. The output is a ranked,
+      human-reviewed action queue intended as decision support for prioritizing limited
+      review time, not an automated or causal recommendation engine.
     </p>
   </div>
 </section>
@@ -227,19 +229,28 @@
 <section id="introduction">
   <h2>1. Introduction</h2>
   <p>
-    An SEO content team rarely has time to review every page in a portfolio. Someone has
-    to decide, every cycle, which handful of pages get attention first, and a wrong
-    call cuts both ways: a page that actually needs work but gets marked "fine" loses
-    recoverable traffic, while a page that's fine but gets flagged wastes a reviewer's
-    limited time.
+    Here is the real problem this paper started from: in this portfolio, 97,799 content
+    items, 77.8% of everything with usable search-console data in March 2026, already rank
+    reasonably well (average position 9.75) and are still converting at roughly a tenth the
+    click-through rate of pages sitting at the same position. That is not a small
+    inefficiency. It is the single largest group in the whole content inventory, and it is
+    invisible to a fixed-threshold rule, since these pages already pass "is it visible"
+    checks like minimum impressions or a decent rank. A team scanning for "broken" pages by
+    traffic or position alone would walk right past most of them.
   </p>
   <p>
-    Early exploration of this content portfolio showed engagement metrics are heavily
-    skewed: most pages sit near zero engagement, while a much smaller group performs far
-    better. That is evidence of distinct behavioral groups, not one uniform population,
-    exactly the situation clustering is built for, and exactly what a single fixed-threshold
-    rule (e.g. "flag anything under X impressions") cannot capture, since it can't see how
-    multiple signals interact.
+    That imbalance is also where this lane started. An early look at this same content
+    portfolio's engagement numbers showed the same shape at a smaller scale: most pages sit
+    near zero engagement while a much smaller group performs far better. That is evidence of
+    distinct behavioral groups, not one uniform population, exactly the situation clustering
+    is built for, and exactly what a single fixed-threshold rule cannot capture, since it
+    can't see how multiple signals interact.
+  </p>
+  <p>
+    An SEO content team rarely has time to review every page in a portfolio. Someone has to
+    decide, every cycle, which handful of pages get attention first, and a wrong call cuts
+    both ways: a page that actually needs work but gets marked "fine" loses recoverable
+    traffic, while a page that's fine but gets flagged wastes a reviewer's limited time.
   </p>
   <p>
     This paper frames the problem as unsupervised discovery rather than prediction: <strong>what
