@@ -5,29 +5,29 @@
   "volume_floor_impressions": 30,
   "k": 3,
   "archetypes": {
-    "Underperforming Good Position": {
-      "reason_code": "ctr_below_expected",
-      "action": "refresh_and_review_ctr",
-      "n": 97804,
-      "pct": 77.84153766564526,
-      "mean_ctr": 0.002022217855655328,
-      "mean_position": 9.754516026855793
+    "Buried and Ignored": {
+      "reason_code": "buried_low_priority",
+      "action": "deprioritize_or_prune_review",
+      "n": 22015,
+      "pct": 17.521588602809505,
+      "mean_ctr": 0.000560043479280607,
+      "mean_position": 45.2834784383301
     },
     "Champions": {
       "reason_code": "champion_maintain",
       "action": "protect_and_monitor",
-      "n": 5832,
-      "pct": 4.641649090692029,
-      "mean_ctr": 0.02136629045193769,
-      "mean_position": 10.41060949819345
+      "n": 5831,
+      "pct": 4.6408531975008955,
+      "mean_ctr": 0.021367948895432663,
+      "mean_position": 10.411190554558967
     },
-    "Buried and Ignored": {
-      "reason_code": "buried_low_priority",
-      "action": "deprioritize_or_prune_review",
-      "n": 22009,
-      "pct": 17.516813243662703,
-      "mean_ctr": 0.0005597205293491505,
-      "mean_position": 45.28827749158974
+    "Underperforming Good Position": {
+      "reason_code": "ctr_below_expected",
+      "action": "refresh_and_review_ctr",
+      "n": 97799,
+      "pct": 77.83755819968961,
+      "mean_ctr": 0.0020223337968182636,
+      "mean_position": 9.75338837261113
     }
   },
   "validated_silhouette_range": [

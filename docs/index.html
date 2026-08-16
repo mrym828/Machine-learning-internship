@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What Performance Archetypes Exist in a Content Portfolio? — A Clustering-Based Approach to SEO Review Prioritization</title>
+<meta name="description" content="A pseudonymized, K-Means-based study of content performance archetypes, validated against a random baseline and held-out clients, turned into a ranked, human-reviewed action queue.">
+<style>
+  :root {
+    --bg: #fbfaf8;
+    --surface: #ffffff;
+    --text-primary: #16140f;
+    --text-secondary: #4a463d;
+    --text-muted: #797364;
+    --border: #e4e0d6;
+    --accent: #b5651d;
+    --accent-soft: #f4e9dc;
+    --code-bg: #f3f1ea;
+    --table-head: #efeade;
+    --link: #8a4b12;
+    --champions: #1baf7a;
+    --underperforming: #eb6834;
+    --buried: #2a78d6;
+    --max-width: 780px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17150f;
+      --surface: #1e1b14;
+      --text-primary: #f5f2ea;
+      --text-secondary: #cdc7b8;
+      --text-muted: #948d7a;
+      --border: #38342a;
+      --accent: #e0964f;
+      --accent-soft: #332920;
+      --code-bg: #23201a;
+      --table-head: #2a251c;
+      --link: #f0aa63;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17150f;
+    --surface: #1e1b14;
+    --text-primary: #f5f2ea;
+    --text-secondary: #cdc7b8;
+    --text-muted: #948d7a;
+    --border: #38342a;
+    --accent: #e0964f;
+    --accent-soft: #332920;
+    --code-bg: #23201a;
+    --table-head: #2a251c;
+    --link: #f0aa63;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    line-height: 1.65;
+    margin: 0;
+    padding: 0 20px 80px;
+  }
+  main {
+    max-width: var(--max-width);
+    margin: 0 auto;
+  }
+  header.hero {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 56px 0 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .kicker {
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin: 0 0 12px;
+  }
+  h1 {
+    font-size: 2rem;
+    line-height: 1.25;
+    margin: 0 0 16px;
+  }
+  .meta {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+  }
+  h2 {
+    font-size: 1.4rem;
+    margin: 56px 0 16px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+  h2:first-of-type { border-top: none; }
+  h3 { font-size: 1.1rem; margin: 28px 0 10px; }
+  p { color: var(--text-secondary); margin: 0 0 16px; }
+  ul, ol { color: var(--text-secondary); }
+  li { margin-bottom: 8px; }
+  strong { color: var(--text-primary); }
+  code {
+    background: var(--code-bg);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 0.88em;
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+  }
+  a { color: var(--link); }
+  .abstract {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 24px 0 0;
+  }
+  .abstract p { margin-bottom: 0; color: var(--text-primary); font-size: 0.98rem; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 0.92rem;
+    overflow-x: auto;
+    display: block;
+  }
+  @media (min-width: 640px) { table { display: table; } }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  th { background: var(--table-head); color: var(--text-primary); font-weight: 600; }
+  td { color: var(--text-secondary); }
+  .figure {
+    margin: 24px 0;
+    text-align: center;
+  }
+  .figure img {
+    max-width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .caption {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    margin-top: 10px;
+  }
+  .callout {
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 20px 0;
+    font-size: 0.94rem;
+  }
+  .callout p { margin-bottom: 0; color: var(--text-primary); }
+  .archetype-swatch {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+  .stat-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .stat-tile {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    flex: 1 1 140px;
+  }
+  .stat-tile .num { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
+  .stat-tile .label { font-size: 0.82rem; color: var(--text-muted); margin-top: 2px; }
+  footer {
+    max-width: var(--max-width);
+    margin: 64px auto 0;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.88rem;
+  }
+  footer a { color: var(--link); }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <p class="kicker">Research paper &middot; FlyRank ML Internship Capstone</p>
+  <h1>What Performance Archetypes Exist in a Content Portfolio, and Which Pages Should You Review First?</h1>
+  <p class="meta">A clustering-based approach to SEO content review prioritization &middot; March 2026 snapshot</p>
+</header>
+
+<main>
+
+<section id="abstract">
+  <h2>Abstract</h2>
+  <div class="abstract">
+    <p>
+      Which content pages should an SEO team review first, given limited time?
+      Using a pseudonymized snapshot of 125,645 content items with real search-console
+      coverage from a single month (March 2026) of the FlyRank internship warehouse,
+      this study applies K-Means clustering on click-through rate and average search
+      position to discover behavioral archetypes without any predefined labels.
+      The resulting model clears a random-assignment baseline by a wide margin
+      (silhouette &minus;0.015 vs. 0.62 train / 0.53 test) and holds up on client accounts it never
+      saw during fitting &mdash; evidence the archetypes reflect real structure, not fitting
+      noise. Three archetypes emerge: a small, high-performing <strong>Champions</strong>
+      group (4.6%), a large <strong>Underperforming Good Position</strong> group (77.8%)
+      that ranks well but converts poorly to clicks, and a <strong>Buried and Ignored</strong>
+      group (17.5%) that ranks and converts poorly. The output is a ranked, human-reviewed
+      action queue intended as decision support for prioritizing limited review time &mdash;
+      not an automated or causal recommendation engine.
+    </p>
+  </div>
+</section>
+
+<section id="introduction">
+  <h2>1. Introduction</h2>
+  <p>
+    An SEO content team rarely has time to review every page in a portfolio. Someone has
+    to decide, every cycle, which handful of pages get attention first &mdash; and a wrong
+    call cuts both ways: a page that actually needs work but gets marked "fine" loses
+    recoverable traffic, while a page that's fine but gets flagged wastes a reviewer's
+    limited time.
+  </p>
+  <p>
+    Early exploration of this content portfolio showed engagement metrics are heavily
+    skewed: most pages sit near zero engagement, while a much smaller group performs far
+    better. That is evidence of distinct behavioral groups, not one uniform population &mdash;
+    exactly the situation clustering is built for, and exactly what a single fixed-threshold
+    rule (e.g. "flag anything under X impressions") cannot capture, since it can't see how
+    multiple signals interact.
+  </p>
+  <p>
+    This paper frames the problem as unsupervised discovery rather than prediction: <strong>what
+    performance archetypes exist across a content portfolio, and which pages should a
+    reviewer look at first?</strong> The output is a ranked, reasoned queue for a human
+    reviewer &mdash; not an automated action, and not a causal claim about what fixing a page
+    will do.
+  </p>
+</section>
+
+<section id="data">
+  <h2>2. Data</h2>
+  <p>
+    <strong>Release:</strong> the FlyRank pseudonymized internship warehouse
+    (<code>FlyRank/internship-warehouse</code> on Hugging Face, gated release), queried
+    directly over remote Parquet via DuckDB &mdash; no raw data downloaded or stored locally.
+  </p>
+  <p>
+    <strong>Tables:</strong> <code>fact_content_daily_performance</code> (grain: report_date
+    &times; client &times; content, partitioned by month) for daily search performance, and
+    <code>dim_content</code> for content metadata, used only for later profiling, never as a
+    clustering input.
+  </p>
+  <p>
+    <strong>Date window:</strong> March 2026 (<code>month = '2026-03'</code>), a single-month
+    snapshot. March was deliberately chosen as a mid-panel month, not the first or last month
+    in the warehouse's history, where tracking coverage tends to be thinnest.
+  </p>
+  <p>
+    <strong>Unit of analysis:</strong> one row per content item, with click-through rate and
+    average search position computed from that item's own March days where search-console
+    data was actually available.
+  </p>
+  <h3>What was excluded, and why</h3>
+  <ul>
+    <li>Items with no real search-console coverage in March. Verified directly: only 53.3%
+      of the ~331K-item March pool (176,738 items) had any real coverage that month &mdash; the
+      rest were excluded because they weren't measured, not because they were inactive.</li>
+    <li>Items with fewer than 30 total impressions in March &mdash; a volume floor added after
+      a real finding: an early clustering attempt produced a suspiciously perfect result
+      driven entirely by a handful of near-zero-impression items where a single lucky click
+      created a misleadingly high ratio.</li>
+    <li>Any label-derived column (trend direction, trend percentage, a decline label).
+      These are the source a proxy label would be built from, never an independent feature.</li>
+    <li>Any product flag or composite score already computed by FlyRank's own system. Using
+      these as inputs would just relearn an existing internal rule, not discover new
+      structure.</li>
+    <li>Per-channel session breakdowns. Checked, not assumed: these columns did not
+      reconcile against reported session totals, so they were excluded rather than trusted.</li>
+  </ul>
+  <div class="callout">
+    <p><strong>Public-safety note:</strong> everything in this study uses pseudonymized
+    content and client identifiers only, for joining and grouping. No client names, domains,
+    URLs, page titles, or raw search queries appear anywhere in this work.</p>
+  </div>
+</section>
+
+<section id="methodology">
+  <h2>3. Methodology</h2>
+  <p>
+    <strong>Method:</strong> K-Means clustering, with <code>k</code> chosen by silhouette
+    score rather than assumed, fit on two standardized features: click-through rate (ctr)
+    and average search position. Standardization matters here &mdash; without it, position's
+    larger raw numbers would dominate distance calculations purely due to scale, not because
+    position is more informative than ctr.
+  </p>
+  <p>
+    <strong>Label:</strong> none. This is unsupervised discovery, not prediction &mdash; there
+    is no ground-truth "archetype" to predict. The proxy for behavior is the feature set
+    itself, and a cluster only becomes meaningful once its contents are inspected and named.
+  </p>
+  <h3>Assumptions checked, not assumed</h3>
+  <ul>
+    <li>One content item maps to exactly one client &mdash; verified with a grain check
+      (zero rows where a content item spans more than one client).</li>
+    <li><code>k</code> was not fixed in advance. Values 2 through 6 were scored by
+      silhouette. A first attempt at k=2 scored a suspiciously perfect 0.94 &mdash; traced to
+      279 near-zero-impression items faking a cluster, not a real archetype. After adding
+      the volume floor, k=3 was the honest winner.</li>
+  </ul>
+  <h3>Baseline</h3>
+  <p>
+    A dummy baseline &mdash; random cluster assignment, no informed logic at all &mdash;
+    scored &minus;0.008 silhouette, essentially zero, confirming that random grouping carries
+    no real structure. The real model has to beat this floor, not just "look better than
+    nothing."
+  </p>
+  <h3>Validation design</h3>
+  <p>
+    A client-grouped split, not a random row split. Content items from the same client can
+    share hidden patterns, so a random split risks leaking client-specific quirks into both
+    sides and making the model look more stable than it really is. Comparing a naive random
+    split (train/test silhouette gap: 0.0016, nearly identical) against the honest grouped
+    split (gap: 0.08, over 50&times; larger) confirmed the concern was real: random splitting
+    hides genuine between-client variation that grouped splitting reveals.
+  </p>
+  <h3>Leakage checks run</h3>
+  <ul>
+    <li>Timeline confirmed: report dates stay strictly inside March 1&ndash;31, 2026.</li>
+    <li>No label-derived or sibling columns used as features.</li>
+    <li>No product flags used as features.</li>
+    <li>Split grouped by the repeating entity (client), not random rows.</li>
+    <li>A dummy random baseline stands in for a base rate, so structure has to beat noise.</li>
+    <li>The suspiciously perfect k=2 result was investigated, not celebrated.</li>
+    <li>Every test-side metric uses a scaler/model already fit on train, applied via
+      transform/predict &mdash; never refit on test.</li>
+    <li>Test-harness sanity check: deliberately feeding the cluster label back in as a
+      feature raised the silhouette score (0.62 &rarr; 0.66), confirming the
+      leakage-detection test itself actually works before trusting that no leakage was
+      found elsewhere.</li>
+  </ul>
+</section>
+
+<section id="results">
+  <h2>4. Results</h2>
+  <p>Same split, same metric (silhouette score), computed in the same run:</p>
+  <table>
+    <thead>
+      <tr><th>Method</th><th>Silhouette</th><th>What it means</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Dummy baseline (random assignment)</td><td>&minus;0.015</td><td>No real structure, the floor</td></tr>
+      <tr><td>K-Means, k=3 (train)</td><td>0.624</td><td>Real, meaningful separation</td></tr>
+      <tr><td>K-Means, k=3 (test, unseen clients)</td><td>0.529</td><td>Held up on clients never seen during fitting</td></tr>
+    </tbody>
+  </table>
+  <p class="caption">Figures above are this paper's own reproducible run (see
+    <code>capstone.ipynb</code>). Earlier validation passes on different client-grouped
+    splits (w05, w06) landed train in 0.52&ndash;0.62 and test in 0.53&ndash;0.64 &mdash;
+    every observed run clears the dummy baseline by a wide margin.</p>
+
+  <div class="figure">
+    <img src="assets/archetype_scatter.png" alt="Scatter plot of click-through rate vs. average search position, colored by archetype: Champions (green) cluster at good position and high CTR, Underperforming Good Position (orange) shares Champions' position range but sits far lower on CTR, and Buried and Ignored (blue) sits almost entirely at poor positions near zero CTR.">
+    <p class="caption">Figure 1. CTR vs. average position for a 4,000-item sample, colored by
+      archetype. Champions and Underperforming Good Position occupy the same position range
+      but separate cleanly on CTR; Buried and Ignored occupies a distinct, worse position
+      range almost entirely.</p>
+  </div>
+</section>
+
+<section id="limitations">
+  <h2>5. Limitations &amp; Honest Framing</h2>
+  <ul>
+    <li><strong>Not causal.</strong> This is a cross-sectional, observational snapshot &mdash;
+      no experiment was run. The archetypes describe how pages currently behave, not why,
+      and nothing here says a refresh or a title change <em>will</em> fix anything. The
+      correct framing is decision-support: "these pages look worth reviewing first,
+      because&hellip;", never "doing X will produce Y."</li>
+    <li><strong>Single-month scope.</strong> Everything is built on March 2026 only. Content
+      behavior shifts with seasonality, algorithm changes, and editorial work already
+      underway. The archetypes were validated to generalize across <em>clients</em> within
+      this month, not across <em>time</em> &mdash; a page's archetype could look different
+      next month, and this has not been tested.</li>
+    <li><strong>Partial population.</strong> Only items with real search-console tracking
+      (53.3% of the broader pool) and at least 30 impressions in March are covered. The rest
+      are excluded for lack of data, not inactivity, and this work says nothing about them.</li>
+    <li><strong>Only two features, on purpose.</strong> The model groups pages by how they
+      behave, not why &mdash; it says nothing about topic, intent, word count, or content
+      quality. A reviewer still needs that context before acting.</li>
+    <li><strong>Fuzzy boundaries, not hard categories.</strong> A hand review of borderline
+      cases found pages sitting right at a cluster's edge &mdash; e.g. a page with a
+      reasonably good position but zero clicks, still counted as Buried despite an
+      almost-escaping position. Archetype membership is a strong hint, not a verdict.</li>
+    <li><strong>Engagement-based signals (GA4) were dropped from the core model</strong>, not
+      because they're uninteresting, but because real GA4 coverage in March 2026 was only
+      27.3% &mdash; too thin to build the primary archetypes on honestly.</li>
+  </ul>
+</section>
+
+<section id="recommendations">
+  <h2>6. Ranked Recommendations</h2>
+  <p>Each validated archetype maps to one reason code and one action:</p>
+  <table>
+    <thead>
+      <tr><th>Archetype</th><th>n</th><th>%</th><th>Mean CTR</th><th>Mean position</th><th>Reason code</th><th>Action</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="archetype-swatch" style="background:var(--underperforming)"></span>Underperforming Good Position</td>
+        <td>97,799</td><td>77.8%</td><td>0.20%</td><td>9.75</td>
+        <td><code>ctr_below_expected</code></td><td><code>refresh_and_review_ctr</code></td>
+      </tr>
+      <tr>
+        <td><span class="archetype-swatch" style="background:var(--buried)"></span>Buried and Ignored</td>
+        <td>22,015</td><td>17.5%</td><td>0.06%</td><td>45.28</td>
+        <td><code>buried_low_priority</code></td><td><code>deprioritize_or_prune_review</code></td>
+      </tr>
+      <tr>
+        <td><span class="archetype-swatch" style="background:var(--champions)"></span>Champions</td>
+        <td>5,831</td><td>4.6%</td><td>2.14%</td><td>10.41</td>
+        <td><code>champion_maintain</code></td><td><code>protect_and_monitor</code></td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    The queue orders Underperforming Good Position first (the clearest fixable opportunity:
+    good ranking, disappointing clicks), then Champions (already working, watch for drift),
+    then Buried last (lowest expected return on review effort). Within each archetype, items
+    are ordered by audience size, so a reviewer's limited time goes to the biggest-audience
+    opportunities first.
+  </p>
+  <h3>Human review is required before any action</h3>
+  <p>
+    The model only sees ctr and average position. A reviewer still needs to check the actual
+    page content, whether a search-results feature or a sibling page is absorbing clicks,
+    whether the page is even still live and correctly tracked, and any client-specific
+    context the model can't know.
+  </p>
+  <div class="callout">
+    <p><strong>Nothing here is automated.</strong> No automatic content edits, no automatic
+    pruning of "Buried" pages, no automated SEO changes of any kind without a human
+    sign-off &mdash; this is a prioritization tool, not an action system.</p>
+  </div>
+</section>
+
+<section id="reproducibility">
+  <h2>7. Reproducibility</h2>
+  <p>
+    Every number in this paper traces back to a notebook in the project repository:
+    <a href="https://github.com/mrym828/Machine-learning-internship" target="_blank" rel="noopener">github.com/mrym828/Machine-learning-internship</a>.
+    All random processes use a fixed seed (<code>random_state=42</code>), and every warehouse
+    query orders rows deterministically before any split or model fit &mdash; a real
+    reproducibility bug (row order from the underlying SQL query affecting K-Means
+    initialization near cluster boundaries) was found and fixed along the way; re-running
+    the affected notebook twice now reproduces identical results.
+  </p>
+  <p>
+    This paper is drawn directly from
+    <a href="https://github.com/mrym828/Machine-learning-internship/blob/main/work/notebooks/capstone.ipynb" target="_blank" rel="noopener"><code>work/notebooks/capstone.ipynb</code></a>,
+    which reruns the full pipeline end to end. The week-by-week notebooks it builds on:
+  </p>
+  <ul>
+    <li><a href="https://github.com/mrym828/Machine-learning-internship/blob/main/work/notebooks/w03_data_contract.ipynb" target="_blank" rel="noopener"><code>w03_data_contract.ipynb</code></a> &mdash; the data contract and coverage checks</li>
+    <li><a href="https://github.com/mrym828/Machine-learning-internship/blob/main/work/notebooks/w04_baseline_score.ipynb" target="_blank" rel="noopener"><code>w04_baseline_score.ipynb</code></a> &mdash; signal checks and the rule-based baseline</li>
+    <li><a href="https://github.com/mrym828/Machine-learning-internship/blob/main/work/notebooks/w05_model.ipynb" target="_blank" rel="noopener"><code>w05_model.ipynb</code></a> &mdash; the K-Means model, baseline comparison, error analysis</li>
+    <li><a href="https://github.com/mrym828/Machine-learning-internship/blob/main/work/notebooks/w06_validation_audit.ipynb" target="_blank" rel="noopener"><code>w06_validation_audit.ipynb</code></a> &mdash; the honest-split audit and leakage checklist</li>
+    <li><a href="https://github.com/mrym828/Machine-learning-internship/blob/main/work/notebooks/w07_action_playbook.ipynb" target="_blank" rel="noopener"><code>w07_action_playbook.ipynb</code></a> &mdash; the ranked action queue and exports</li>
+    <li><a href="https://github.com/mrym828/Machine-learning-internship/blob/main/work/notebooks/capstone.ipynb" target="_blank" rel="noopener"><code>capstone.ipynb</code></a> &mdash; the notebook this paper is drawn from directly</li>
+  </ul>
+  <p>
+    To rerun: clone the repository, request access to the gated Hugging Face warehouse
+    release, set a <code>HF_TOKEN</code> in a local <code>.env</code> file (never committed),
+    and run the notebooks in the order above.
+  </p>
+</section>
+
+<section id="acknowledgments">
+  <h2>8. Acknowledgments &amp; Data Credit</h2>
+  <p>
+    Built on the FlyRank ML Internship dataset. Learn more at
+    <a href="https://flyrank.ai" target="_blank" rel="noopener">flyrank.ai</a>.
+  </p>
+</section>
+
+</main>
+
+<footer>
+  <p>Research paper produced as part of the FlyRank ML Internship capstone. All data is
+  pseudonymized; no client names, domains, URLs, or raw search queries appear anywhere in
+  this work or its source repository.</p>
+</footer>
+
+</body>
+</html>
